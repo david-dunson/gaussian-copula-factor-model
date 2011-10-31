@@ -1,0 +1,122 @@
+
+R version 2.13.1 (2011-07-08)
+Copyright (C) 2011 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(roxygen2)
+Loading required package: digest
+> dir='~/Documents/svn/bfa'
+> setwd(dir)
+> 
+> f = paste('~/Documents/svn/bfa/pkg/man/',list.files('~/Documents/svn/bfa/pkg/man/'), sep='')
+> lapply(f, unlink)
+[[1]]
+[1] 0
+
+[[2]]
+[1] 0
+
+[[3]]
+[1] 0
+
+[[4]]
+[1] 0
+
+[[5]]
+[1] 0
+
+[[6]]
+[1] 0
+
+[[7]]
+[1] 0
+
+[[8]]
+[1] 0
+
+[[9]]
+[1] 0
+
+[[10]]
+[1] 0
+
+[[11]]
+[1] 0
+
+[[12]]
+[1] 0
+
+[[13]]
+[1] 0
+
+[[14]]
+[1] 0
+
+[[15]]
+[1] 0
+
+[[16]]
+[1] 0
+
+[[17]]
+[1] 0
+
+[[18]]
+[1] 0
+
+> 
+> roxygenize('pkg', 'pkg', copy.package=FALSE, overwrite=TRUE, 
++            unlink.target=TRUE)
+Loading required package: Rcpp
+Loading required package: RcppArmadillo
+Loading required package: ggplot2
+Loading required package: reshape
+Loading required package: plyr
+
+Attaching package: 'reshape'
+
+The following object(s) are masked from 'package:plyr':
+
+    rename, round_any
+
+Loading required package: grid
+Loading required package: proto
+Loading required package: coda
+Loading required package: lattice
+Writing bfa-package.Rd
+Writing utri_restrict.Rd
+Writing bfa_model.Rd
+Writing print.bfa.Rd
+Writing mean.bfa.Rd
+Writing HPDinterval.bfa.Rd
+Writing get_coda.Rd
+Writing bfa_gauss.Rd
+Writing bfa_copula.Rd
+Writing bfa_mixed.Rd
+Writing plot_loadings.Rd
+Writing biplot.bfa.Rd
+Writing woodbury.Rd
+Writing reg_samp.Rd
+Writing corr_samp.Rd
+Writing cov_samp.Rd
+Writing predict.bfa.Rd
+Writing ratings08.Rd
+> 
+> proc.time()
+   user  system elapsed 
+  4.005   0.123   4.164 

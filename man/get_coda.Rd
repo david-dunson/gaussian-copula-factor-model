@@ -2,8 +2,8 @@
 \alias{get_coda}
 \title{Get coda object}
 \usage{
-  get_coda(model, loadings = TRUE, scores = FALSE, scale =
-  TRUE, positive = FALSE)
+  get_coda(model, loadings = TRUE, scores = FALSE,
+    scale = TRUE, positive = FALSE)
 }
 \arguments{
   \item{model}{a \code{bfa} model}

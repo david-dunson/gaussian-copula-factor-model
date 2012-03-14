@@ -2,8 +2,8 @@
 \alias{predict.bfa}
 \title{Posterior predictive and univariate conditional posterior predictive distributions}
 \usage{
-  \method{predict}{bfa} (object, resp.var = NA, cond.vars =
-  NA, numeric.as.factor = TRUE, ...)
+  \method{predict}{bfa} (object, resp.var = NA,
+    cond.vars = NA, numeric.as.factor = TRUE, ...)
 }
 \arguments{
   \item{object}{\code{bfa} model object}

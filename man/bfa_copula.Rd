@@ -3,15 +3,17 @@
 \title{Initialize and fit a copula factor model}
 \usage{
   bfa_copula(x, data = NULL, num.factor = 1, restrict = NA,
-  normal.dist = NA, center.data = TRUE, scale.data = TRUE,
-  nsim = 0, nburn = 0, thin = 1, print.status = 500,
-  keep.scores = FALSE, keep.loadings = TRUE, loading.prior
-  = c("gdp", "pointmass", "normal"), factor.scales = FALSE,
-  px = TRUE, coda = "loadings", coda.scale = TRUE, imh =
-  FALSE, imh.iter = 500, imh.burn = 500, ...)
+    normal.dist = NA, center.data = TRUE,
+    scale.data = TRUE, nsim = 0, nburn = 0, thin = 1,
+    print.status = 500, keep.scores = FALSE,
+    keep.loadings = TRUE,
+    loading.prior = c("gdp", "pointmass", "normal"),
+    factor.scales = FALSE, px = TRUE, coda = "loadings",
+    coda.scale = TRUE, imh = FALSE, imh.iter = 500,
+    imh.burn = 500, ...)
 }
 \arguments{
-  \item{x}{A formula, matrix or bfa object.}
+  \item{x}{A formula or bfa object.}
 
   \item{data}{The data if x is a formula}
 
@@ -105,10 +107,10 @@ require(MASS)
 data(UScereal)
 UScereal$shelf = factor(UScereal$shelf, ordered=TRUE)
 UScereal$vitamins = factor(UScereal$vitamins, ordered=TRUE,
-levels=c("none", "enriched", "100\%"))
+                           levels=c("none", "enriched", "100\%"))
 obj = bfa_copula(~., data=UScereal[,-1], num.factor=2, nsim=10000, nburn=1000, thin=4,
-rest=list(c("sugars", 2, "0")), loading.prior="gdp", keep.scores=T,
-print.status=2500)
+                     rest=list(c("sugars", 2, "0")), loading.prior="gdp", keep.scores=T,
+                     print.status=2500)
 plot_loadings(obj)
 #plot_loadings returns ggplot objects you can tweak
 m = plot_loadings(obj, type='credint')

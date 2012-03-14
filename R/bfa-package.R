@@ -10,7 +10,8 @@
 #' }
 #'
 #' This package provides model fitting for several Bayesian factor models including 
-#' Gaussian, ordinal probit, mixed and semiparametric Gaussian copula factor models. 
+#' Gaussian, ordinal probit, mixed and semiparametric Gaussian copula factor models
+#' under a range of priors.
 #' 
 #' @name bfa-package
 #' @docType package

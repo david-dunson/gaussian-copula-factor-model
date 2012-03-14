@@ -2,8 +2,8 @@
 \alias{HPDinterval.bfa}
 \title{HPD intervals from a bfa object}
 \usage{
-  \method{HPDinterval}{bfa} (obj, prob = 0.95, loadings =
-  TRUE, scores = FALSE, ...)
+  \method{HPDinterval}{bfa} (obj, prob = 0.95,
+    loadings = TRUE, scores = FALSE, ...)
 }
 \arguments{
   \item{obj}{A bfa object}

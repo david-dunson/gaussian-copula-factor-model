@@ -3,13 +3,14 @@
 \title{Initialize and fit a Gaussian factor model}
 \usage{
   bfa_gauss(x, data = NULL, num.factor = 1, restrict = NA,
-  center.data = TRUE, scale.data = TRUE, nsim = 0, nburn =
-  0, thin = 1, print.status = 500, keep.scores = FALSE,
-  keep.loadings = TRUE, loading.prior = c("gdp",
-  "pointmass", "normal"), coda = "loadings", ...)
+    center.data = TRUE, scale.data = TRUE, nsim = 0,
+    nburn = 0, thin = 1, print.status = 500,
+    keep.scores = FALSE, keep.loadings = TRUE,
+    loading.prior = c("gdp", "pointmass", "normal"),
+    coda = "loadings", ...)
 }
 \arguments{
-  \item{x}{A formula, matrix or bfa object.}
+  \item{x}{A formula or bfa object.}
 
   \item{data}{The data if x is a formula}
 

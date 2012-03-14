@@ -7,9 +7,6 @@
   Accessed through the Project VoteSmart API:
   \url{http://www.projectvotesmart.org}
 }
-\usage{
-  ratings08
-}
 \description{
   This dataset consists of special interest group ratings
   of members of the US House and Senate. It contains two
@@ -20,4 +17,5 @@
 \author{
   Jared Murray \email{jared.murray@stat.duke.edu}
 }
+\keyword{datasets}
 

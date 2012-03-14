@@ -3,8 +3,8 @@
 \title{Initialize a bfa model}
 \usage{
   bfa_model(x, data = NULL, num.factor = 1, restrict = NA,
-  normal.dist = NA, center.data = TRUE, scale.data = FALSE,
-  init = TRUE, ...)
+    normal.dist = NA, center.data = TRUE,
+    scale.data = FALSE, init = TRUE, ...)
 }
 \arguments{
   \item{x}{A formula or matrix}

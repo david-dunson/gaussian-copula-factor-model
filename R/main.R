@@ -46,7 +46,7 @@ return()
 #' \item gdp.alpha, gdp.beta: GDP prior parameters
 #' }
 #' 
-#' @param x A formula, matrix or bfa object. 
+#' @param x A formula or bfa object. 
 #' @param data The data if x is a formula
 #' @param num.factor Number of factors
 #' @param restrict A matrix or list giving restrictions on factor loadings. A matrix should be the 
@@ -104,7 +104,7 @@ bfa_gauss <- function(x, data=NULL, num.factor=1, restrict=NA,
 #' \item gdp.alpha, gdp.beta: GDP prior parameters
 #' }
 #' 
-#' @param x A formula, matrix or bfa object. 
+#' @param x A formula or bfa object. 
 #' @param data The data if x is a formula
 #' @param num.factor Number of factors
 #' @param restrict A matrix or list giving restrictions on factor loadings. A matrix should be the 
@@ -226,7 +226,7 @@ bfa_copula <- function(x, data=NULL, num.factor=1, restrict=NA, normal.dist=NA,
 #' \item gdp.alpha, gdp.beta: GDP prior parameters
 #' }
 #' 
-#' @param x A formula, matrix or bfa object. 
+#' @param x A formula or bfa object. 
 #' @param data The data if x is a formula
 #' @param num.factor Number of factors
 #' @param restrict A matrix or list giving restrictions on factor loadings. A matrix should be the 

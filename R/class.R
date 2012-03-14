@@ -40,7 +40,7 @@ bfa_model <- function(x, data=NULL, num.factor=1, restrict=NA,
                       init=TRUE, ...) {
   more_args = list(...)
   if (is.matrix(x)) D = x
-  if(is.formula(x)) {
+  if(inherits(x, "formula")) {
     fr = model.frame(x, data=data, na.action=NULL)
     d = dim(fr)
     if(any(is.na(normal.dist))) {

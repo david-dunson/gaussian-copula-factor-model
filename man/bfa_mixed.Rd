@@ -4,15 +4,16 @@
 margins}
 \usage{
   bfa_mixed(x, data = NULL, num.factor = 1, restrict = NA,
-  normal.dist = NA, center.data = TRUE, scale.data = TRUE,
-  nsim = 0, nburn = 0, thin = 1, print.status = 500,
-  keep.scores = FALSE, keep.loadings = TRUE, loading.prior
-  = c("gdp", "pointmass", "normal"), factor.scales = FALSE,
-  px = TRUE, coda = "loadings", coda.scale = TRUE, imh.iter
-  = 500, imh.burn = 500, ...)
+    normal.dist = NA, center.data = TRUE,
+    scale.data = TRUE, nsim = 0, nburn = 0, thin = 1,
+    print.status = 500, keep.scores = FALSE,
+    keep.loadings = TRUE,
+    loading.prior = c("gdp", "pointmass", "normal"),
+    factor.scales = FALSE, px = TRUE, coda = "loadings",
+    coda.scale = TRUE, imh.iter = 500, imh.burn = 500, ...)
 }
 \arguments{
-  \item{x}{A formula, matrix or bfa object.}
+  \item{x}{A formula or bfa object.}
 
   \item{data}{The data if x is a formula}
 

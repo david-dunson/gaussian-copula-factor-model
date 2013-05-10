@@ -15,6 +15,6 @@ void sampleSparseLoadingsJ(arma::mat& Z, arma::mat& A, arma::mat& F,
 						   Rcpp::NumericVector& tauinv, Rcpp::NumericVector& sigma2inv, Rcpp::NumericVector& error_var_i, 
 						   Rcpp::NumericVector& rho, 
 						   arma::mat& A_restrict, Rcpp::NumericMatrix& pnz, 
-						   int n, int p, int k, int px );
+						   int n, int p, int k, int px, double A_prior_var=1.0 );
 
 #endif

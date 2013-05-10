@@ -39,6 +39,6 @@
 }
 \description{
   This function accepts a data matrix \code{D} and
-  specified options, returning an S3 object of class sbfac.
+  specified options, returning an S3 object of class bfa.
 }
 

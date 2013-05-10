@@ -18,7 +18,7 @@ utri_restrict = function(p, k) {
 #' Initialize a bfa model
 #'
 #' This function accepts a data matrix \code{D} and specified options,
-#' returning an S3 object of class sbfac.
+#' returning an S3 object of class bfa.
 #'
 #' @param x A formula or matrix
 #' @param data The data if x is a formula
@@ -72,6 +72,9 @@ bfa_model <- function(x, data=NULL, num.factor=1, restrict=NA,
   D = as.matrix(D)
 	D[is.infinite(D)] = NA
 	D = t(scale(t(D), center=center.data, scale=scale.data))
+  
+  mInd = which(is.na(D[as.logical(normal.var),]), arr.ind=TRUE)
+  
 	p = dim(D)[1]
 	n = dim(D)[2]
   k = num.factor
@@ -175,6 +178,7 @@ bfa_model <- function(x, data=NULL, num.factor=1, restrict=NA,
 				nsim=0, nburn=0, thin=1, 
 				
 				original.data=data,
+        mInd = mInd,
         
         loadings = loadings,
         post.loadings.mean = matrix(rep(0,k*p), ncol=k), 
@@ -208,11 +212,53 @@ print.bfa <- function(x, ...) {
 #' Extract posterior means from bfa object
 #' @param x A bfa object
 #' @param ... Ignored
-#' @return A list with elements loadings and scores containing MCMC means
+#' @return A list with elements loadings and scores containing MCMC sample means
 #' @method mean bfa
 #' @export
 mean.bfa <- function(x, ...) {
   return(list(loadings=x$post.loadings.mean, scores=x$post.scores.mean))
+}
+
+#' Extract posterior means from bfa object
+#' @param x A bfa object
+#' @param ... Ignored
+#' @return A list with elements loadings and scores containing MCMC sample variances
+#' @export
+var.bfa <- function(x, ...) {
+  return(list(loadings=x$post.loadings.var, scores=x$post.scores.var))
+}
+
+#' Extract samples of implied regression coefficients from a bfa object
+#' @param object A bfa object
+#' @param responses A character vector containing one or more response variables
+#' @param scale Whether to compute regression coefficients from factor loadings on
+#' the correlation scale; recommended if object is a copula or mixed factor model.
+#' @param ... Ignored
+#' @return An array of dimension length(index) x p-length(index) x (no. of mcmc 
+#' samples) with posterior samples of regression coefficients
+#' @method coef bfa
+#' @export
+coef.bfa <- function(object, responses, scale = attr(object, "type")!="gauss", ...) {
+  
+  index = which(responses %in% colnames(object$original.data))
+  pl = object$post.loadings
+  ns = dim(pl)[3]
+  out = array(NA, dim = c(length(index), object$P - length(index), 
+                          ns))
+  dimnames(out) = list(object$varlabel[index], object$varlabel[-index], 
+                       NULL)
+  for (i in 1:ns) {
+    if (attr(object, "type") == "gauss") {
+      u = object$post.sigma2[i, ]
+    }
+    else {
+      u = 1/(1 + rowSums(pl[, , i]^2))
+      pl[, , i] = pl[, , i] * sqrt(u)
+    }
+    mat = t(pl[-index, , i]) %*% woodbury(pl[-index, , i], u[-index])
+    out[, , i] = pl[index, , i] %*% mat
+  }
+  return(out)
 }
 
 #' HPD intervals from a bfa object
@@ -261,13 +307,3 @@ HPDinterval.bfa = function(obj, prob=0.95, loadings=TRUE, scores=FALSE, ...) {
   }
   return(out)
 }
-
-# Extract posterior variances from sbfac object
-# @param x A bfa object
-# @param ... Ignored
-# @method var bfa
-# @return A list with elements loadings and scores containing MCMC variances
-# @export
-#var.bfa <- function(x, ...) {
-#  return(list(loadings=x$post.loadings.var, scores=x$post.scores.var))
-#}

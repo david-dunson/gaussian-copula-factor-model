@@ -31,9 +31,9 @@
 \description{
   Posterior predictive and univariate conditional posterior
   predictive distributions, currently implemented only for
-  copula models. If resp.var is not NA, returns an estimate
-  of the conditional cdf at every observed data point for
-  each MCMC iterate. If resp.var is NA, returns draws from
-  the joint posterior predictive.
+  Gaussian and copula models. If resp.var is not NA,
+  returns an estimate of the conditional cdf at every
+  observed data point for each MCMC iterate. If resp.var is
+  NA, returns draws from the joint posterior predictive.
 }
 

@@ -1,0 +1,12 @@
+Version 0.3
+------------------------------------------------------------------------------
+
+* Fix for default MCMC simulation size of 0, which threw confusing errors.
+
+* Removed most plotting functions (the ones depending on ggplot2). The ggplot2
+  dependency was more trouble that it was worth. biplot still works, however.
+
+* Added a coef method, which returns posterior samples of the implied regression
+  coefficients for conditional response distributions
+
+* Bugfix for imputing missing data.

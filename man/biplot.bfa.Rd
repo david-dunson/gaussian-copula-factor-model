@@ -7,8 +7,8 @@
 \arguments{
   \item{x}{A bfa object}
 
-  \item{factors}{Numeric/integer vector giving indices of
-  the factors to plot}
+  \item{factors}{Integer vector giving indices of the
+  factors to plot}
 
   \item{...}{Additional arguments to biplot; see
   \code{?biplot}}

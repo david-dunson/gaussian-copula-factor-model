@@ -1,8 +1,8 @@
-\name{mean.bfa}
-\alias{mean.bfa}
+\name{var.bfa}
+\alias{var.bfa}
 \title{Extract posterior means from bfa object}
 \usage{
-  \method{mean}{bfa} (x, ...)
+  var.bfa(x, ...)
 }
 \arguments{
   \item{x}{A bfa object}
@@ -11,7 +11,7 @@
 }
 \value{
   A list with elements loadings and scores containing MCMC
-  sample means
+  sample variances
 }
 \description{
   Extract posterior means from bfa object

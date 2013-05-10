@@ -11,12 +11,14 @@ Description: This package provides model fitting for several Bayesian
         semiparametric Gaussian copula factor models under a range of
         priors.
 SystemRequirements: GNU make
-Version: 0.2.3
-Date: 2012-3-14
-Depends: Rcpp (>= 0.8.6), RcppArmadillo, ggplot2, reshape, coda
+Version: 0.3
+Date: 2013-5-10
+Depends: Rcpp (>= 0.9.10), RcppArmadillo (>= 0.2.35), reshape, coda
 Imports: coda
 Collate: 'bfa-package.R' 'class.R' 'get_coda.R' 'main.R' 'plots.R'
-        'rng.R' 'postproc.R' 'ratings08.R'
-Packaged: 2012-03-15 03:19:58 UTC; jared
+        'rng.R' 'postproc.R' 'ratings08.R' 'bfa_copula.R' 'bfa_gauss.R'
+        'bfa_mixed.R' 'wrappers.R'
+Packaged: 2013-05-11 15:10:38 UTC; jared
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2012-03-15 05:33:56
+Date/Publication: 2013-05-11 20:07:02

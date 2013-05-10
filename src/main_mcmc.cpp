@@ -1,7 +1,6 @@
 #include "main_mcmc.h"
 #include "loadings_sparse.h"
 #include "loadings_gdp.h"
-#include "loadings_beta.h"
 #include "erl.h"
 #include "loadings.h"
 #include "scores.h"
@@ -43,7 +42,6 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	}
 	
 	int method = as<int>(arg["method"]);
-	
   int px  = as<int>(arg["px"]);
   int imh = as<int>(arg["imh"]);
 	
@@ -56,28 +54,30 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	bool keepscores   = as<bool>(keepscores_);
 	bool keeploadings = as<bool>(keeploadings_);
 	int  printstatus  = as<int>(printstatus_);
-	
-	//Rprintf("Save max? %d\n", save_max);
-	
+
 	if (!quiet) { 
+    Rcout << "Using loadings prior: ";
 	  switch (method) {
 	    case 0:
-        Rprintf("Using loadings prior: normal\n");
-        break;
+        Rcout << "normal\n"; break;
       case 1:
-        Rprintf("Using loadings prior: pointmass\n");
-        break;
+        Rcout << "pointmass\n"; break;
       case 2:
-        Rprintf("Using loadings prior: gdp\n");
-        break;
+        Rcout << "gdp\n"; break;
     }
     Rprintf("Using PX: %s\n", (px > 0) ? "Yes" : "No"); 
 	  Rprintf("Using loadings prior variance %4.2f\n", loadings_v); 
-    Rprintf("Factor Scales: %s\n", (t_model > 0) ? "Yes" : "No"); 
+    Rprintf("Factor Scale Hyperparameters (MV t model): %s\n", (t_model > 0) ? "Yes" : "No"); 
     Rprintf("IMH: %s\n", (imh > 0) ? "Yes" : "No"); 
 	}	
-	
-	SEXP evi = arg["error_var_i"];
+
+  //Indices of missing data, to be imputed
+  SEXP mInd_ = arg["mInd"];
+  IntegerMatrix mInd(mInd_);
+  int nmis = mInd.nrow();
+
+  //Setup Gaussian margins, if any
+  SEXP evi = arg["error_var_i"];
 	Rcpp::NumericVector error_var_i(evi);
 	double numobs = std::accumulate(error_var_i.begin(), error_var_i.end(), 0.0);
 	bool sample_error_var = true;
@@ -85,6 +85,7 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 		sample_error_var = false;
 	}
 	
+  //Setup IMH for mixed FA
 	if (imh>0) {
 		prop_cov  = arg["prop.cov"];
 		prop_mean = arg["prop.mean"];
@@ -228,8 +229,6 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 												  px,  n,  p,  k, positive );
 				break;
 			case 3: //Beta smb
-			  sampleLoadingsBeta(Z, A, F, sigma2inv, error_var_i, A_restrict, loadings_v,  Psi_inv, bp, bq,
-			                     px, n, p, k, positive);
 			  break;
 		}
 		
@@ -246,7 +245,7 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
       do_imh(Zr, A, F, Ra, maxes, argsorts, ldata_mean, sigma2inv,
                   df, prop_cov, prop_mean, prop_prec, nlevels, 
                   error_var_i,imh_acc, s2a, s2b);
-		} else {
+	 	} else {
 			if (!sample_error_var) {
 				sampleZ(Zr, Ra, maxes, argsorts, ldata_mean);
 			} else {
@@ -262,17 +261,27 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 				}
 			}
 		}
-	
+	  
+    //impute Gaussian margins
+    if(nmis>0) {
+      for(int ii=0; ii<nmis; ii++) {
+        int mi = mInd(ii,0)-1;
+        int mj = mInd(ii,1)-1;
+        Z(mi, mj) = ldata_mean(mi, mj) + sqrt(1./sigma2inv(mi))*Rf_rnorm(0,1);
+      }
+    }
+    
 			
-	if (i>1 && i%printstatus==0 &&!quiet) {
+	  if (i>1 && i%printstatus==0 &&!quiet) {
 			Rprintf("iteration %d\n",i);
 			if (imh>0) {
+        Rprintf("IMH acceptance rates:\n");
 				for(int pp=0; pp<p; pp++) {
 					Rprintf("%.3f ", imh_acc[pp]/i);
 				}
 			Rprintf("\n");
 			}
-	}
+	  }
 	
 	if (i>=nburn && i%thin==0){
 			

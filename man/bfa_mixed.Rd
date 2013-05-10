@@ -5,8 +5,8 @@ margins}
 \usage{
   bfa_mixed(x, data = NULL, num.factor = 1, restrict = NA,
     normal.dist = NA, center.data = TRUE,
-    scale.data = TRUE, nsim = 0, nburn = 0, thin = 1,
-    print.status = 500, keep.scores = FALSE,
+    scale.data = TRUE, nsim = 10000, nburn = 1000,
+    thin = 1, print.status = 500, keep.scores = FALSE,
     keep.loadings = TRUE,
     loading.prior = c("gdp", "pointmass", "normal"),
     factor.scales = FALSE, px = TRUE, coda = "loadings",
@@ -32,9 +32,10 @@ margins}
   variables should be treated as observed Gaussian.
   Defaults to all numeric variables if x is a formula.}
 
-  \item{center.data}{Center data}
+  \item{center.data}{Center data (for continuous variables
+  - recommended!)}
 
-  \item{scale.data}{Scale data}
+  \item{scale.data}{Scale data (for continuous variables)}
 
   \item{nsim}{Number of iterations past burn-in}
 
@@ -51,8 +52,8 @@ margins}
 
   \item{keep.loadings}{Save samples of factor loadings}
 
-  \item{loading.prior}{Specify point mass ("pointmass",
-  default) or normal priors ("normal")}
+  \item{loading.prior}{Specify GDP ("gdp", default) point
+  mass ("pointmass") or normal priors ("normal")}
 
   \item{factor.scales}{Include a separate scale parameter
   for each factor}
@@ -91,10 +92,10 @@ margins}
   Additional parameters: \itemize{ \item loadings.var:
   Factor loading prior variance \item tau.a, tau.b: Gamma
   hyperparameters (scale=1/b) for factor precisions (if
-  factor.scales=T) \item rho.a, rho.b: Beta hyperparameters
-  for point mass prior \item sigma2.a, sigma2.b: Gamma
-  hyperparameters for error precisions (for numeric
-  variables) \item gdp.alpha, gdp.beta: GDP prior
-  parameters }
+  factor.scales=T). Default is a=b=1 (MV t w/ df=2) \item
+  rho.a, rho.b: Beta hyperparameters for point mass prior
+  \item sigma2.a, sigma2.b: Gamma hyperparameters for error
+  precisions (for numeric variables) \item gdp.alpha,
+  gdp.beta: GDP prior parameters }
 }
 

@@ -7,7 +7,7 @@
 }
 \details{
   \tabular{ll}{ Package: \tab bfa\cr Type: \tab Package\cr
-  Version: \tab 0.2.3\cr Date: \tab 2012-3-14\cr License:
+  Version: \tab 0.3\cr Date: \tab 2012-9-11\cr License:
   \tab GPL-3\cr LazyLoad: \tab yes\cr }
 
   This package provides model fitting for several Bayesian

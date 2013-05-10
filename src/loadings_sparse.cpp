@@ -41,80 +41,55 @@ SEXP updateRho( SEXP rho_, SEXP A_, SEXP A_restrict_, SEXP rhoa_, SEXP rhob_ ){
 void sampleSparseLoadingsJ(arma::mat& Z, arma::mat& A, arma::mat& F, Rcpp::NumericVector& tauinv, 
 							 Rcpp::NumericVector& sigma2inv, Rcpp::NumericVector& error_var_i,
 						   Rcpp::NumericVector& rho, arma::mat& A_restrict, Rcpp::NumericMatrix& pnz, 
-						   int n, int p, int k, int px ){
+						   int n, int p, int k, int px, double A_prior_var ){
     
-    arma::mat t;
-    arma::mat uvector;
-    arma::vec sumf2 = arma::sum(arma::pow(F, 2), 1);
-    double r = 1.0;
-    double samp = 0.0;
-    arma::mat Ap_var;
-	  arma::mat Ap_means;
-	
-    if (px>0) {
-		arma::mat FFt = F*arma::trans(F);
-		Ap_var = arma::inv(FFt + arma::eye(k,k));
-		Ap_means = Ap_var*F*trans(Z);
-		//Rf = arma::chol(Ap_var);
-		
+  arma::mat t, uvector, Ap_var, Ap_means, FFt;
+  arma::vec sumf2 = arma::sum(arma::pow(F, 2), 1);
+  double r = 1.0, samp = 0.0;
+
+  if (px>0) {
+	  FFt = F*arma::trans(F);
+	  /*Ap_var = arma::inv(FFt + (1/A_prior_var)*arma::eye(k,k));
+	  Ap_means = Ap_var*F*trans(Z);*/
+  }
+  
+  
+  double u=0.0, uu=0.0, v=0.0, loglog=0.0, logc=0.0;
+  for (int i=0; i<p; i++) {
+    
+    //PX step
+    if (px>0 && error_var_i(i)<1.0) {
+      Ap_var = inv(FFt*sigma2inv(i) + (1/A_prior_var)*eye(k,k));
+      Ap_means = Ap_var*F*trans(Z.row(i))*sigma2inv(i);
+      double ssq = accu(square(trans(Z.row(i)) - trans(F)*Ap_means));
+      double prior_ssq = as_scalar(trans(Ap_means) * Ap_means)/A_prior_var;
+      double scale = 2.0/(ssq + prior_ssq);
+      r = Rf_rgamma(0.5*n, scale);
+    } else {
+      r = 1.0;
     }
     
-    double u=0.0, uu=0.0, v=0.0, loglog=0.0, logc=0.0;
-    for (int i=0; i<p; i++) {
-		
-    	if (px>0 && error_var_i(i)<1.0) {
-    	
-    		//double ssq = accu(square(trans(Z.row(j)) - trans(F)*Ap_means.col(j)));
-				//double prior_ssq = as_scalar(trans(Ap_means.col(j)) * inv(diagmat(A_prior_var.row(0))) * Ap_means.col(j));
-				//double scale = 2.0/(ssq + prior_ssq);
-				//r = Rf_rgamma(0.5*n, scale);
-    	
-			  double ssq = accu(square(trans(Z.row(i)) - trans(F)*Ap_means.col(i)));
-			  //double ssq = accu(square(Z.row(j)));
-			  //fix to allow prior var neq 1
-			  double prior_ssq = as_scalar(trans(Ap_means.col(i)) * Ap_means.col(i));
-			  //double prior_ssq = -1.0*as_scalar( Z.row(j)*trans(F)*Ap_var*F*trans(Z.row(j)) );
-			  
-			  double scale = 2.0/(ssq + prior_ssq);
-			  r = Rf_rgamma(0.5*n, scale);
-			
-			  if(r!=r) {
-				  r = 1.0;
-			  }
-			}
-			for (int j=0; j<k; j++){
-				if (A_restrict(i,j) > 0) {
-					t = Z.row(i) - A.row(i)*F + A(i,j)*F.row(j);
-					u = arma::accu(F.row(j)%t)*sqrt(r)*sigma2inv(j);
-					v = sumf2(j)*sigma2inv(j) + tauinv[i];
-					
-					if (A_restrict(i,j) > 1) {
-	
-						R_CheckUserInterrupt();
-						
-						double lo = Rcpp::stats::pnorm_1( -u/sqrt(v), 0.0, true, false);
-						double un = std::min(Rf_runif(lo, 1.0), 1.0-6.7e-16);
-						double samp = u/v + Rcpp::stats::qnorm_1(un, 0.0, true, false)/sqrt(v);
-						
-						//double rtnorm_slice(int iter, double mu, double sigma, double a, double b) 
-						//double samp = rtnorm_slice(50, u/v, 1/sqrt(v), 0.0, R_PosInf); 
-						
-						A(i,j) = samp;
-					} else {
-						
-						loglog = log(u*u) - log(2.0*v);
-						
-						logc = log(rho[j]) - log(1-rho[j]) - 0.5*log(v) + 0.5*log(tauinv[i]) + exp(loglog);
-						pnz(i,j) = 1/(1+exp(logc));
-						
-						uu = Rf_runif(0.0, 1.0);
-						
-						log(1/uu-1) > logc ? A(i,j) = 0.0 : A(i,j) = Rf_rnorm(u/v, 1/sqrt(v));
-					}
+		for (int j=0; j<k; j++){
+			if (A_restrict(i,j) > 0) { //nonzero
+				t = Z.row(i) - A.row(i)*F + A(i,j)*F.row(j);
+				u = arma::accu(F.row(j)%t)*sqrt(r)*sigma2inv(j);
+				v = sumf2(j)*sigma2inv(j) + tauinv[i];
+				if (A_restrict(i,j) > 1) { //strictly positive
+					double lo = Rcpp::stats::pnorm_1( -u/sqrt(v), 0.0, true, false);
+					double un = std::min(Rf_runif(lo, 1.0), 1.0-6.7e-16);
+					double samp = u/v + Rcpp::stats::qnorm_1(un, 0.0, true, false)/sqrt(v);
+					A(i,j) = samp;
 				} else {
-					A(i,j) = 0.0;
-					pnz(i,j) = 1.0;
+					loglog = log(u*u) - log(2.0*v);
+					logc = log(rho[j]) - log(1-rho[j]) - 0.5*log(v) + 0.5*log(tauinv[i]) + exp(loglog);
+					pnz(i,j) = 1/(1+exp(logc));
+					uu = Rf_runif(0.0, 1.0);
+					log(1/uu-1) > logc ? A(i,j) = 0.0 : A(i,j) = Rf_rnorm(u/v, 1/sqrt(v));
 				}
+			} else {
+				A(i,j) = 0.0;
+				pnz(i,j) = 1.0;
+			}
 		}
 	}
 }

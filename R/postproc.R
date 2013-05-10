@@ -21,31 +21,6 @@ woodbury = function(lam, u) {
   return(out)
 }
 
-#' Compute samples of regression coefficients
-#' @param model \code{bfa} model object
-#' @param resp.var A character vector giving the name(s) of the response
-#' @return An array of dimension length(index) x p-length(index) x (no. of mcmc samples) with 
-#' posterior samples of regression coefficients
-#' @export
-reg_samp = function(model, resp.var) {
-  index = which(resp.var %in% colnames(model$original.data))
-  pl = model$post.loadings
-  ns = dim(pl)[3]
-  out = array(NA, dim=c(length(index),model$P-length(index),ns))
-  dimnames(out) = list(model$varlabel[index], model$varlabel[-index], NULL)
-  for(i in 1:ns) {
-    if(attr(model, "type") == "gauss") {
-      u = model$post.sigma2[i,]
-    } else {
-      u = 1/(1 + rowSums(pl[, , i]^2))
-      pl[, , i]  = pl[, , i]*sqrt(u)
-    }
-    mat = t(pl[-index, , i])%*%woodbury(pl[-index, , i], u[-index])
-    out[, , i] = pl[index, , i]%*%mat
-  }
-  return(out)
-}
-
 #' Compute samples of the correlation matrix
 #' @param model \code{bfa} model object
 #' @return A p x p x (no. of mcmc samples) array containing samples of the correlation matrix
@@ -80,7 +55,7 @@ cov_samp = function(model) {
 #' Posterior predictive and univariate conditional posterior predictive distributions
 #' 
 #' Posterior predictive and univariate conditional posterior predictive distributions, currently
-#' implemented only for copula models. If resp.var is not NA, returns an estimate of the conditional
+#' implemented only for Gaussian and copula models. If resp.var is not NA, returns an estimate of the conditional
 #' cdf at every observed data point for each MCMC iterate. If resp.var is NA, returns draws from the
 #' joint posterior predictive.
 #' @param object \code{bfa} model object
@@ -97,7 +72,7 @@ cov_samp = function(model) {
 #' @export
 predict.bfa = function(object, resp.var=NA, cond.vars=NA, numeric.as.factor=TRUE, ...) {
   mtype = attr(object, "type")
-  if(mtype!="copula") stop("Prediction only available for copula models (see also ?reg.coef)")
+  if(mtype!="copula") stop("Prediction only available for copula models (see also ?reg_samp)")
   
   n.mcmc=dim(object$post.loadings)[3]
   

@@ -2,8 +2,8 @@
 \alias{predict.bfa}
 \title{Posterior predictive and univariate conditional posterior predictive distributions}
 \usage{
-  \method{predict}{bfa} (object, resp.var = NA,
-    cond.vars = NA, numeric.as.factor = TRUE, ...)
+\method{predict}{bfa}(object, resp.var = NA, cond.vars = NA,
+  numeric.as.factor = TRUE, ...)
 }
 \arguments{
   \item{object}{\code{bfa} model object}
@@ -24,16 +24,16 @@
   \item{...}{Ignored}
 }
 \value{
-  A matrix where each row is either a sample of the
-  conditional posterior predictive cdf at each datapoint,
-  or a single sample from the joint posterior predictive.
+A matrix where each row is either a sample of the
+conditional posterior predictive cdf at each datapoint, or
+a single sample from the joint posterior predictive.
 }
 \description{
-  Posterior predictive and univariate conditional posterior
-  predictive distributions, currently implemented only for
-  Gaussian and copula models. If resp.var is not NA,
-  returns an estimate of the conditional cdf at every
-  observed data point for each MCMC iterate. If resp.var is
-  NA, returns draws from the joint posterior predictive.
+Posterior predictive and univariate conditional posterior
+predictive distributions, currently implemented only for
+Gaussian and copula models. If resp.var is not NA, returns
+an estimate of the conditional cdf at every observed data
+point for each MCMC iterate. If resp.var is NA, returns
+draws from the joint posterior predictive.
 }
 

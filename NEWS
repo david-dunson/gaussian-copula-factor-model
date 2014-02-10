@@ -1,3 +1,12 @@
+Version 0.3.1
+------------------------------------------------------------------------------
+
+* Fixed segfault for print.status=0
+
+* Forcing CRAN binary to use later version of Rcpp, to get rid of the 
+  MatrixRow bug
+
+
 Version 0.3
 ------------------------------------------------------------------------------
 

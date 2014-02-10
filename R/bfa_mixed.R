@@ -34,7 +34,6 @@ NULL
 #' @param thin Keep every thin'th MCMC sample (i.e. save nsim/thin samples)
 #' @param print.status How often to print status messages to console
 #' @param keep.scores Save samples of factor scores
-#' @param keep.loadings Save samples of factor loadings
 #' @param loading.prior Specify GDP ("gdp", default) point mass ("pointmass") or normal priors ("normal") 
 #' @param factor.scales Include a separate scale parameter for each factor
 #' @param px Use parameter expansion for ordinal variables (recommended)
@@ -50,11 +49,12 @@ NULL
 
 bfa_mixed <- function(x, data=NULL, num.factor=1, restrict=NA, normal.dist=NA, 
                       center.data=TRUE, scale.data=TRUE, nsim=10000, nburn=1000, thin=1,
-                      print.status=500, keep.scores=FALSE, keep.loadings=TRUE,
+                      print.status=500, keep.scores=FALSE,
                       loading.prior=c("gdp", "pointmass", "normal"), 
                       factor.scales=FALSE, px=TRUE,
                       coda="loadings", coda.scale=TRUE, imh.iter=500,
                       imh.burn=500, ...) {
+  keep.loadings = TRUE
   loading.prior = match.arg(loading.prior)
   m = .bfa(x, data=data, num.factor=num.factor, restrict=restrict, normal.dist=normal.dist, 
            center.data=center.data, scale.data=scale.data, nsim=nsim, nburn=nburn, thin=thin,

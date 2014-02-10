@@ -2,9 +2,9 @@
 \alias{bfa_model}
 \title{Initialize a bfa model}
 \usage{
-  bfa_model(x, data = NULL, num.factor = 1, restrict = NA,
-    normal.dist = NA, center.data = TRUE,
-    scale.data = FALSE, init = TRUE, ...)
+bfa_model(x, data = NULL, num.factor = 1, restrict = NA,
+  normal.dist = NA, center.data = TRUE, scale.data = FALSE, init = TRUE,
+  ...)
 }
 \arguments{
   \item{x}{A formula or matrix}
@@ -35,10 +35,10 @@
   \item{...}{ignored}
 }
 \value{
-  An S3 object of class \code{bfa}.
+An S3 object of class \code{bfa}.
 }
 \description{
-  This function accepts a data matrix \code{D} and
-  specified options, returning an S3 object of class bfa.
+This function accepts a data matrix \code{D} and specified
+options, returning an S3 object of class bfa.
 }
 

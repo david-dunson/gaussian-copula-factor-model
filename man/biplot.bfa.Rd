@@ -2,7 +2,7 @@
 \alias{biplot.bfa}
 \title{Display a biplot}
 \usage{
-  \method{biplot}{bfa} (x, factors = c(1, 2), ...)
+\method{biplot}{bfa}(x, factors = c(1, 2), ...)
 }
 \arguments{
   \item{x}{A bfa object}
@@ -14,9 +14,9 @@
   \code{?biplot}}
 }
 \value{
-  Shows a biplot
+Shows a biplot
 }
 \description{
-  Display a biplot
+Display a biplot
 }
 

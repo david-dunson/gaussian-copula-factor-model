@@ -203,6 +203,8 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	
 	mat_iterator iFtmp = Ftmp.begin();
 	mat_iterator iAtmp = Atmp.begin();
+  
+  if(printstatus<1) printstatus = nsim;
 		
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //

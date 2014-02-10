@@ -2,12 +2,11 @@
 \alias{bfa_gauss}
 \title{Initialize and fit a Gaussian factor model}
 \usage{
-  bfa_gauss(x, data = NULL, num.factor = 1, restrict = NA,
-    center.data = TRUE, scale.data = TRUE, nsim = 10000,
-    nburn = 1000, thin = 1, print.status = 500,
-    keep.scores = FALSE, keep.loadings = TRUE,
-    loading.prior = c("gdp", "pointmass", "normal"),
-    factor.scales = TRUE, coda = "loadings", ...)
+bfa_gauss(x, data = NULL, num.factor = 1, restrict = NA,
+  center.data = TRUE, scale.data = TRUE, nsim = 10000, nburn = 1000,
+  thin = 1, print.status = 500, keep.scores = FALSE,
+  loading.prior = c("gdp", "pointmass", "normal"), factor.scales = TRUE,
+  coda = "loadings", ...)
 }
 \arguments{
   \item{x}{A formula or bfa object.}
@@ -43,8 +42,6 @@
 
   \item{keep.scores}{Save samples of factor scores}
 
-  \item{keep.loadings}{Save samples of factor loadings}
-
   \item{loading.prior}{Specify the prior on factor loadings
   - generalized double Pareto ("gdp", default), point mass
   mixtures (mixture of point mass at zero + mean zero
@@ -64,19 +61,19 @@
   arguments (see details)}
 }
 \value{
-  A \code{bfa} object with posterior samples.
+A \code{bfa} object with posterior samples.
 }
 \description{
-  Performs MCMC model fitting for a Gaussian factor model.
+Performs MCMC model fitting for a Gaussian factor model.
 }
 \details{
-  Additional parameters: \itemize{ \item loadings.var:
-  Factor loading prior variance \item tau.a, tau.b: Gamma
-  hyperparameters (scale=1/b) for factor precisions (if
-  factor.scales=T). Default is a=b=1 (MV t w/ df=2) \item
-  rho.a, rho.b: Beta hyperparameters for point mass prior
-  \item sigma2.a, sigma2.b: Gamma hyperparameters for error
-  precisions \item gdp.alpha, gdp.beta: GDP prior
-  parameters }
+Additional parameters: \itemize{ \item loadings.var: Factor
+loading prior variance \item tau.a, tau.b: Gamma
+hyperparameters (scale=1/b) for factor precisions (if
+factor.scales=T). Default is a=b=1 (MV t w/ df=2) \item
+rho.a, rho.b: Beta hyperparameters for point mass prior
+\item sigma2.a, sigma2.b: Gamma hyperparameters for error
+precisions \item gdp.alpha, gdp.beta: GDP prior parameters
+}
 }
 

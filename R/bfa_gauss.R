@@ -29,7 +29,6 @@ NULL
 #' @param thin Keep every thin'th MCMC sample (i.e. save nsim/thin samples)
 #' @param print.status How often to print status messages to console
 #' @param keep.scores Save samples of factor scores
-#' @param keep.loadings Save samples of factor loadings
 #' @param loading.prior Specify the prior on factor loadings -  generalized double Pareto ("gdp", default),
 #' point mass mixtures (mixture of point mass at zero + mean zero normal) ("pointmass") or normal/Gaussian ("normal") 
 #' @param factor.scales Include a shared precision parameter for each column of the factor 
@@ -44,10 +43,11 @@ NULL
 
 bfa_gauss <- function(x, data=NULL, num.factor=1, restrict=NA, 
                       center.data=TRUE, scale.data=TRUE, nsim=10000, nburn=1000, thin=1,
-                      print.status=500, keep.scores=FALSE, keep.loadings=TRUE,
+                      print.status=500, keep.scores=FALSE,
                       loading.prior=c("gdp", "pointmass", "normal"), 
                       factor.scales = TRUE,
                       coda="loadings", ...) {
+  keep.loadings=TRUE
   loading.prior = match.arg(loading.prior)
   fr = model.frame(x, data=data, na.action=NULL)
   d = dim(fr)

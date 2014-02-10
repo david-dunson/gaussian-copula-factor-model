@@ -159,7 +159,7 @@ bfa_model <- function(x, data=NULL, num.factor=1, restrict=NA,
         }
       }
     }
-    bfa:::.updateScores(Z, loadings, scores)
+    .updateScores(Z, loadings, scores)
   }
   
   if(any(is.null(more_args$init.fa))) more_args$init.fa=FALSE
@@ -240,7 +240,7 @@ var.bfa <- function(x, ...) {
 #' @export
 coef.bfa <- function(object, responses, scale = attr(object, "type")!="gauss", ...) {
   
-  index = which(responses %in% colnames(object$original.data))
+  index = match(responses, colnames(object$original.data))
   pl = object$post.loadings
   ns = dim(pl)[3]
   out = array(NA, dim = c(length(index), object$P - length(index), 

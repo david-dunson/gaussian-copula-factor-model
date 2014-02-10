@@ -2,8 +2,8 @@
 \alias{get_coda}
 \title{Get coda object}
 \usage{
-  get_coda(model, loadings = TRUE, scores = FALSE,
-    scale = TRUE, positive = FALSE)
+get_coda(model, loadings = TRUE, scores = FALSE, scale = TRUE,
+  positive = FALSE)
 }
 \arguments{
   \item{model}{a \code{bfa} model}
@@ -21,11 +21,10 @@
   constraints}
 }
 \value{
-  An \code{mcmc} object
+An \code{mcmc} object
 }
 \description{
-  Returns an \code{mcmc} object for use in \code{coda}
-  functions for convergence diagnostics, HPD intervals,
-  etc.
+Returns an \code{mcmc} object for use in \code{coda}
+functions for convergence diagnostics, HPD intervals, etc.
 }
 

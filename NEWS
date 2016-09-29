@@ -1,3 +1,26 @@
+Version 0.4
+------------------------------------------------------------------------------
+
+* Add accessor functions to extract (samples of) posterior loadings/scores
+* Remove references to the missing plot_loadings function in examples
+* Remove center.data and scale.data arguments to bfa_* functions
+* Doc fixes; also documenting the mean vector options in bfa_gauss and bfa_mixed
+  
+Version 0.3.3
+------------------------------------------------------------------------------
+
+* Fixes some naming issues from C++11, per CRAN maintainers
+* Removes dependence on arma's RNG. Results from previous
+  versions will not replicate exactly.
+
+Version 0.3.2
+------------------------------------------------------------------------------
+
+* bfa_gauss can include a mean vector by supplying additional (undocumented)
+  arguments include_mean=TRUE and mean_mu0, mean_phi0 which are length p
+  vectors giving the componentwise prior mean and precision (respectively) for
+  the normal prior on E(y).
+
 Version 0.3.1
 ------------------------------------------------------------------------------
 
@@ -13,7 +36,7 @@ Version 0.3
 * Fix for default MCMC simulation size of 0, which threw confusing errors.
 
 * Removed most plotting functions (the ones depending on ggplot2). The ggplot2
-  dependency was more trouble that it was worth. biplot still works, however.
+  dependency was more trouble than it was worth. biplot still works, however.
 
 * Added a coef method, which returns posterior samples of the implied regression
   coefficients for conditional response distributions

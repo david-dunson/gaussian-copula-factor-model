@@ -2,7 +2,10 @@
 NULL
 #' Initialize and fit a Gaussian copula factor model
 #'
-#' Perform MCMC model fitting for a semiparametric Gaussian copula factor model
+#' This function performs a specified number of MCMC iterations and
+#' returns an object containing summary statistics from the MCMC samples
+#' as well as the actual samples of factor scores if keep.scores is \code{TRUE}.
+#' Default behavior is to save only samples of the loadings. 
 #' 
 #' Additional parameters:
 #' \itemize{
@@ -22,8 +25,6 @@ NULL
 #' restrictions are ">0" or "0".
 #' @param normal.dist A character vector specifying which variables should be treated as observed 
 #' Gaussian. Defaults to none (a completely semiparametric copula model)
-#' @param center.data Center continuous variables (only if normal.dist includes one or more variables)
-#' @param scale.data  Scale continuous variables (only if normal.dist includes one or more variables)
 #' @param nsim Number of iterations past burn-in
 #' @param nburn Number of initial (burn-in) iterations to discard
 #' @param thin Keep every thin'th MCMC sample (i.e. save nsim/thin samples)
@@ -52,11 +53,6 @@ NULL
 #' obj = bfa_copula(~., data=UScereal[,-1], num.factor=2, nsim=10000, nburn=1000, thin=4,
 #'                      rest=list(c("sugars", 2, "0")), loading.prior="gdp", keep.scores=T, 
 #'                      print.status=2500)
-#' plot_loadings(obj)
-#' #plot_loadings returns ggplot objects you can tweak
-#' m = plot_loadings(obj, type='credint')
-#' print(m)
-#' print(m+opts(title="HPD intervals (p=0.95)")+theme_bw())
 #' biplot(obj, cex=c(0.8, 0.8))
 #' plot(get_coda(obj)) 
 #' plot(get_coda(obj, loadings=F, scores=T))
@@ -93,12 +89,19 @@ NULL
 
 
 bfa_copula <- function(x, data=NULL, num.factor=1, restrict=NA, normal.dist=NA, 
-                       center.data=TRUE, scale.data=TRUE, nsim=10000, nburn=1000, thin=1,
+                       nsim=10000, nburn=1000, thin=1,
                        print.status=500, keep.scores=FALSE,
                        loading.prior=c("gdp", "pointmass", "normal"), 
                        factor.scales=FALSE, px=TRUE,
                        coda="loadings", coda.scale=TRUE, imh=FALSE, imh.iter=500,
                        imh.burn=500, ...) {
+  
+  args <- list(...)
+  if (!is.null(args$center.data) | !is.null(args$scale.data)) {
+    stop("The center.data and scale.data arguments are no longer supported. Please center or scale the data
+         before calling the bfa_* function.")
+  }
+  
   keep.loadings = TRUE
   loading.prior = match.arg(loading.prior)
   if (class(x)!='bfa') {
@@ -109,7 +112,7 @@ bfa_copula <- function(x, data=NULL, num.factor=1, restrict=NA, normal.dist=NA,
     }
   }
   m = .bfa(x, data=data, num.factor=num.factor, restrict=restrict, normal.dist=normal.dist, 
-           center.data=center.data, scale.data=scale.data, nsim=nsim, nburn=nburn, thin=thin,
+           center.data=NULL, scale.data=NULL, nsim=nsim, nburn=nburn, thin=thin,
            print.status=print.status, keep.scores=keep.scores, keep.loadings=keep.loadings,
            loading.prior=loading.prior, factor.scales=factor.scales, px=px, coda=coda, 
            coda.scale=coda.scale, imh=imh, imh.iter=imh.iter, imh.burn=imh.burn, ...)

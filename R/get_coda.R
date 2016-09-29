@@ -1,3 +1,5 @@
+
+
 #' Get coda object
 #'
 #' Returns an \code{mcmc} object for use in \code{coda} functions for 
@@ -6,12 +8,12 @@
 #' @param model a \code{bfa} model
 #' @param loadings Return samples of the factor loadings? (default is TRUE)
 #' @param scores Return samples of the factor scores? (default is FALSE)
-#' @param scale Return factor loadings on the correlation scale? (default is TRUE)
+#' @param scale Return factor loadings on the correlation scale? (default is TRUE for mixed/copula models, FALSE for Gaussian models)
 #' @param positive Post-process to enforce positivity constraints
 #' @return An \code{mcmc} object
 #' @export
 
-get_coda <- function(model, loadings=TRUE, scores=FALSE, scale=TRUE, positive=FALSE) {
+get_coda <- function(model, loadings=TRUE, scores=FALSE, scale=attr(model, "type")!="gauss", positive=FALSE) {
   k = model$K; p = model$P; n=model$N
   nsim = model$nsim; thin = model$thin; nburn = model$nburn
   samples = NULL

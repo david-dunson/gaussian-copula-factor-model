@@ -25,7 +25,7 @@ woodbury = function(lam, u) {
 #' @param model \code{bfa} model object
 #' @return A p x p x (no. of mcmc samples) array containing samples of the correlation matrix
 #' @export
-corr_samp = function(model) {
+cor_samp = function(model) {
   pl=model$post.loadings
   ns = dim(pl)[3]
   out = array(NA, dim=c(model$P, model$P, ns))
@@ -55,7 +55,7 @@ cov_samp = function(model) {
 #' Posterior predictive and univariate conditional posterior predictive distributions
 #' 
 #' Posterior predictive and univariate conditional posterior predictive distributions, currently
-#' implemented only for Gaussian and copula models. If resp.var is not NA, returns an estimate of the conditional
+#' implemented only for Gaussian copula models. If resp.var is not NA, returns an estimate of the conditional
 #' cdf at every observed data point for each MCMC iterate. If resp.var is NA, returns draws from the
 #' joint posterior predictive.
 #' @param object \code{bfa} model object
@@ -144,4 +144,43 @@ predict.bfa = function(object, resp.var=NA, cond.vars=NA, numeric.as.factor=TRUE
     }
   }
   return(y.samp)
+}
+
+#' Get posterior samples of factor loadings 
+#'
+#' Returns an array of posterior samples of factor loadings
+#'
+#' @param model a \code{bfa} model
+#' @param scale Return factor loadings on the correlation scale? (default is TRUE for mixed/copula models, FALSE for Gaussian models)
+#' @return A p x k x (no. of mcmc samples) array containing samples of the p x k loadings matrix
+#' @export
+
+get_posterior_loadings <- function(model, scale=attr(model, "type")!="gauss") {
+
+  pl = model$post.loadings
+  if (scale) {
+    if (dim(pl)[2]>1) {
+      for (i in 1:dim(pl)[3]) {
+        pl[,,i] = pl[,,i]/sqrt(model$post.sigma2[i,]+rowSums(pl[,,i]^2))
+      }
+    } else {
+      for (i in 1:dim(pl)[3]) {
+        pl[,,i] = pl[,,i]/sqrt(model$post.sigma2[i,]+pl[,,i]^2)
+      }
+    }
+  }
+  
+  return(pl)
+}
+
+#' Get posterior samples of factor scores 
+#'
+#' Returns an array of posterior samples of factor scores
+#'
+#' @param model a \code{bfa} model
+#' @return An \code{mcmc} object
+#' @export
+get_posterior_scores <- function(model) {
+  if(is.na(model$post.scores)) stop("Posterior samples of the scores were not saved")
+  return(model$post.scores)
 }

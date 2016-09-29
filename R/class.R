@@ -1,3 +1,5 @@
+#' @include postproc.R
+NULL
 #' Upper triangular loadings restriction
 #'
 #' Returns the restriction matrix corresponding to Geweke & Zhou (1996)
@@ -29,14 +31,14 @@ utri_restrict = function(p, k) {
 #' where 'variable' is the manifest variable, 1 is the factor, and '>0' is the restriction. Acceptable
 #' restrictions are '>0' or '0'.
 #' @param normal.dist A character vector specifying which variables should be treated as observed Gaussian
-#' @param center.data Center each margin
-#' @param scale.data Scale each margin to unit mean/variance
+#' @param center.data Center each margin (deprecated, ignored!)
+#' @param scale.data Scale each margin to unit mean/variance (deprecated, ignored!)
 #' @param init Initialize the factor loadings 
 #' @param ... ignored
 #' @return An S3 object of class \code{bfa}. 
 
 bfa_model <- function(x, data=NULL, num.factor=1, restrict=NA, 
-                      normal.dist=NA, center.data=TRUE, scale.data=FALSE, 
+                      normal.dist=NA, center.data=NULL, scale.data=NULL, 
                       init=TRUE, ...) {
   more_args = list(...)
   if (is.matrix(x)) D = x
@@ -71,7 +73,7 @@ bfa_model <- function(x, data=NULL, num.factor=1, restrict=NA,
   
   D = as.matrix(D)
 	D[is.infinite(D)] = NA
-	D = t(scale(t(D), center=center.data, scale=scale.data))
+	#D = t(scale(t(D), center=center.data, scale=scale.data))
   
   mInd = which(is.na(D[as.logical(normal.var),]), arr.ind=TRUE)
   
@@ -211,21 +213,25 @@ print.bfa <- function(x, ...) {
 
 #' Extract posterior means from bfa object
 #' @param x A bfa object
+#' @param scale Return factor loadings on the correlation scale? (default is TRUE for mixed/copula models, FALSE for Gaussian models)
 #' @param ... Ignored
 #' @return A list with elements loadings and scores containing MCMC sample means
 #' @method mean bfa
 #' @export
-mean.bfa <- function(x, ...) {
-  return(list(loadings=x$post.loadings.mean, scores=x$post.scores.mean))
+mean.bfa <- function(x, scale=attr(x, "type")!="gauss", ...) {
+  pl = get_posterior_loadings(x, scale)
+  return(list(loadings=apply(pl, 2, mean), scores=x$post.scores.mean))
 }
 
-#' Extract posterior means from bfa object
+#' Extract posterior variances from bfa object
 #' @param x A bfa object
+#' @param scale Return factor loadings on the correlation scale? (default is TRUE for mixed/copula models, FALSE for Gaussian models)
 #' @param ... Ignored
 #' @return A list with elements loadings and scores containing MCMC sample variances
 #' @export
-var.bfa <- function(x, ...) {
-  return(list(loadings=x$post.loadings.var, scores=x$post.scores.var))
+var.bfa <- function(x, scale=attr(x, "type")!="gauss", ...) {
+  pl = get_posterior_loadings(x, scale)
+  return(list(loadings=apply(pl, 2, var), scores=x$post.scores.var))
 }
 
 #' Extract samples of implied regression coefficients from a bfa object

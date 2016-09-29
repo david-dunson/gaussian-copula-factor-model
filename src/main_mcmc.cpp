@@ -28,19 +28,32 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	GetRNGstate();
 	
 	// Set the Armadillo seed from R's 
-	int seed = (int)Rf_runif(0.0, 10000.0);
-	std::srand(seed);
+	//int seed = (int)Rf_runif(0.0, 10000.0);
+	//std::srand(seed);
 	
 	// Pull together extra arguments
 	Rcpp::List arg(more_args_);
 	
-	bool quiet;
+	bool quiet, include_mean;
 	try {
 		quiet = as<bool>(arg["quiet"]);
 	} catch(...) {
 		quiet = false;
 	}
 	
+	/*
+	arma::vec mean_mu0, mean_phi0;
+	
+	try {
+	  include_mean = as<bool>(arg["include_mean"]);
+	  Rcpp::Rcout << "including mean vector" << std::endl;
+	  mean_mu0 = as<arma::vec>(arg["mean_mu0"]);
+	  mean_phi0 = as<arma::vec>(arg["mean_phi0"]);
+	} catch(...) {
+	  Rcpp::Rcout << "zero mean vector" << std::endl;
+	  include_mean = false;
+	}
+	*/
 	int method = as<int>(arg["method"]);
   int px  = as<int>(arg["px"]);
   int imh = as<int>(arg["imh"]);
@@ -105,6 +118,11 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
   double beta  = as<double>(priors["beta"]);
   double bp    = as<double>(priors["bp"]);
   double bq    = as<double>(priors["bq"]);
+  double meanmu   = as<double>(priors["meanmu"]);
+  double meanprec = as<double>(priors["meanprec"]);
+  
+	Rcpp::Rcout << "A";
+	
 	
 	// Create Rcpp objects
 	Rcpp::NumericMatrix A_restrictr(A_restrict_);
@@ -130,6 +148,23 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	arma::rowvec A_maxnnz_col = arma::sum(A_restrict, 0);
 	arma::colvec A_maxnnz_row = arma::sum(A_restrict, 1);
 	
+	Rcpp::Rcout << "B " << p << " " << k << " " << n ;
+	
+	arma::vec mean_mu0(p), mean_phi0(p);
+	mean_mu0.fill(meanmu);
+	mean_phi0.fill(meanprec);
+	
+	// setup means
+	for (int pp=0; pp<p; pp++) {
+	  if (error_var_i(pp) > 0.0) {
+	    //Normal marginal distribution; sample means
+	    include_mean = true;
+	  } else {
+	    // Make sure the prior mean is 0; will never be updated
+	    mean_mu0(pp) = 0.0;
+	  }
+	}
+	
 	arma::mat Z(Zr.begin(), p, n, false);
 	arma::mat A(Ar.begin(), p, k, false); 
 	arma::mat F(Fr.begin(), k, n, false);
@@ -144,7 +179,7 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	
 	arma::mat Psi_inv;
 	if (method==3) {
-	  Psi_inv = pow(randu(p,k),-1.0);
+	  Psi_inv = pow(my_randu(p,k),-1.0);
 	}
 	
 	// MCMC simulation parameters/containers
@@ -184,6 +219,9 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 	vec_iterator iAp = Ap.begin();
 	
 	Rcpp::NumericMatrix sigma2inv_samp(samples, p);
+	
+	arma::mat mean_samp(samples, p);
+	arma::vec mean(p); mean.fill(0.0);
 	
 	Rcpp::NumericVector scAp(k*p);
 	vec_iterator iscAp = scAp.begin();
@@ -242,6 +280,23 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 		}
 		
 		arma::mat ldata_mean = A*F;
+		
+		if(include_mean) {
+		  Z.each_col() += mean;
+		  //arma::mat Zres = Z - ldata_mean;
+		  for (int pp=0; pp<p; pp++) {
+		    if (error_var_i(pp) > 0.0) {
+		      //Normal marginal distribution; sample means
+		      double zsum = accu(Z.row(pp) - ldata_mean.row(pp));
+		      
+		      double post_prec = mean_phi0(pp) + n*sigma2inv(pp);
+		      double post_mean = mean_mu0(pp)*mean_phi0(pp) + zsum*sigma2inv(pp);
+		      post_mean /= post_prec;
+		      mean(pp) = post_mean + R::rnorm(0, 1)/sqrt(post_prec);
+		    }
+		  }
+		  Z.each_col() -= mean;
+		}
 		
 		if (imh>0) {
       do_imh(Zr, A, F, Ra, maxes, argsorts, ldata_mean, sigma2inv,
@@ -343,13 +398,15 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 			Rcpp::NumericMatrix::Row srow = sigma2inv_samp(isamp, _);	
 			srow = sigma2inv;
 			
+			mean_samp.row(isamp) = mean.t(); //(samples, p);
+			
 			isamp++;
 		}
 	}
 	
-	if (!keepscores)   { Fp[0]       = NA_REAL; }
-	if (!keeploadings) { Ap[0]       = NA_REAL; }
-	if (save_max<1)    { post_max[0] = NA_REAL; }
+	if (!keepscores)  Fp[0]       = NA_REAL; 
+	if (!keeploadings) Ap[0]       = NA_REAL; 
+	if (save_max<1)    post_max[0] = NA_REAL; 
 	
 	return List::create(
 					_["maxp"]    = post_max,
@@ -360,7 +417,8 @@ SEXP MCMCstep( SEXP Z_, SEXP A_, SEXP F_, SEXP tauinv_, SEXP rho_ ,
 					_["Ap.var"]  = Apstat.var(),
 					_["Fp"]      = Fp,
 					_["Fp.mean"] = Fpstat.mean(),
-					_["Fp.var"]  = Fpstat.var());
+					_["Fp.var"]  = Fpstat.var(),
+					_["mu"] = mean_samp);
 
 	PutRNGstate();
 	

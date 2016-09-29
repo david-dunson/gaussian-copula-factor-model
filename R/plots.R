@@ -6,7 +6,7 @@ NULL
 #' @param factors Integer vector giving indices of the factors to plot
 #' @param ... Additional arguments to biplot; see \code{?biplot}
 #' @method biplot bfa
-#' @return Shows a biplot
+#' @return Displays a biplot
 #' @export
 biplot.bfa <- function(x, factors=c(1,2), ...) {
   call_args = list(...)

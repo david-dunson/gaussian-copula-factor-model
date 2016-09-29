@@ -20,7 +20,7 @@ bool is_sorted(arma::vec row) {
 
 
 
-bool isfinite(double x) 
+bool bfa_isfinite(double x) 
 {
 	return (x <= DBL_MAX && x >= -DBL_MAX); 
 }    
@@ -52,7 +52,7 @@ double rtnorm_slice(int iter, double mu, double sigma, double a, double b) {
 double rtnorm_1(double mu, double sigma, double a, double b){
     //draw from mean mu, unit variance truncated normal
     //sigma argument is a farce
-    double lo, hi, out;
+    double lo, hi, out = 0.0/0.0;
     double zlo = a-mu; double zhi = b-mu;
     if(a<b) {
 			if ((std::fabs(zlo) < 8.0) && (std::fabs(zhi) < 8.0)) {

@@ -93,8 +93,8 @@ SEXP updateZ( SEXP Z_, SEXP Ra_, SEXP maxes_, SEXP argsorts_, SEXP A_, SEXP F_ )
     int k = Ar.ncol();
     int p = Ar.nrow();
     
-    arma::mat Z(Zr.begin(), p, n, false);       // reuses memory and avoids extra copy
-    arma::mat A(Ar.begin(), p, k, false);       // reuses memory and avoids extra copy
+    arma::mat Z(Zr.begin(), p, n, false);      
+    arma::mat A(Ar.begin(), p, k, false);      
     arma::mat F(Fr.begin(), k, n, false);       // reuses memory and avoids extra copy
     arma::mat mu = A*F;
     arma::vec vars = 1 + arma::sum(arma::pow(A,2), 1);

@@ -1,6 +1,6 @@
 
 .bfa <- function(x, data=NULL, num.factor=1, restrict=NA, normal.dist=NA, 
-                center.data=TRUE, scale.data=TRUE, nsim=0, nburn=0, thin=1,
+                center.data=NULL, scale.data=NULL, nsim=0, nburn=0, thin=1,
                 print.status=500, keep.scores=FALSE, keep.loadings=TRUE,
                 loading.prior="pointmass", factor.scales=FALSE, px=TRUE,
                 coda="loadings", coda.scale=TRUE, imh=FALSE, imh.iter=500,
@@ -113,13 +113,15 @@ fit_bfa <- function(model, nsim, nburn, thin=1, print.status=500,
   s2b   = ifelse(is.null(more_args$sigma2.b),  1.0, more_args$sigma2.b)
   alpha = ifelse(is.null(more_args$gdp.alpha), 3.0, more_args$gdp.alpha)
   beta  = ifelse(is.null(more_args$gdp.beta),  1.0, more_args$gdp.beta)
-  bp    = ifelse(is.null(more_args$bp),       10.0, more_args$gdp.alpha)
-  bq    = ifelse(is.null(more_args$bq),        5.0, more_args$gdp.beta)
+  bp    = ifelse(is.null(more_args$bp),       10.0, more_args$bp)  #Deprecated
+  bq    = ifelse(is.null(more_args$bq),        5.0, more_args$bq)  #Deprecated
+  mu.mean      = ifelse(is.null(more_args$mu.mean),        0, more_args$mu.mean)
+  mu.var       = ifelse(is.null(more_args$mu.var),       1e4, more_args$mu.var)
   
 
   model$priors = list(rhoa=rhoa, rhob=rhob, s=s, taua=taua, taub=taub, 
                       s2a=s2a, s2b=s2b, alpha=alpha, beta=beta,
-                      bp=bp, bq=bq)
+                      bp=bp, bq=bq, meanmu=mu.mean, meanprec=1/mu.var)
   
   if (model$nsim == 0 && more_args$init==TRUE && more_args$px>0) {
     model = .fit(model, max(1000, nburn/10), 0, thin=1, factor.scales=factor.scales,
@@ -195,6 +197,8 @@ fit_bfa <- function(model, nsim, nburn, thin=1, print.status=500,
   model$post.sigma2        = 1/sim$sigma2inv
   model$post.loadings.prob = 1.0-sim$pnz
   
+  model$post.mean = sim$mean
+  
  if (!is.null(more_args$save_max) && more_args$save_max>0) {
     model$post.cutpoints = sim$maxp
  }
@@ -216,7 +220,7 @@ fit_bfa <- function(model, nsim, nburn, thin=1, print.status=500,
 
 # Imputation on the original scale of the data
 #
-# This function imputes data on the original scale given a current value of the latent
+# Imputes data on the original scale given a current value of the latent
 # continuous data, using the empirical cdf.
 #
 # @param D Observed data

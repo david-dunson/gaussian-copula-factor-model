@@ -2,7 +2,13 @@
 NULL
 #' Initialize and fit a Gaussian factor model
 #'
-#' Performs MCMC model fitting for a Gaussian factor model.
+#' This function performs a specified number of MCMC iterations and
+#' returns an object containing summary statistics from the MCMC samples
+#' as well as the actual samples of factor scores if keep.scores is \code{TRUE}.
+#' Default behavior is to save only samples of the loadings. 
+#' 
+#' Note: All the priors in use assume that the manifest variables are on approximately the 
+#' same scale.
 #' 
 #' Additional parameters:
 #' \itemize{
@@ -11,6 +17,7 @@ NULL
 #' \item rho.a, rho.b: Beta hyperparameters for point mass prior
 #' \item sigma2.a, sigma2.b: Gamma hyperparameters for error precisions
 #' \item gdp.alpha, gdp.beta: GDP prior parameters
+#' \item mu.mean, mu.var: (Scalar) prior mean and variance for mu[j] (where E(y) = mu). Defaults are 0 and 1e4.
 #' }
 #' 
 #' @param x A formula or bfa object. 
@@ -22,8 +29,6 @@ NULL
 #' or 2 (strictly positive). List elements should be character vectors of the form c("variable",1, ">0")
 #' where 'variable' is the manifest variable, 1 is the factor, and ">0" is the restriction. Acceptable
 #' restrictions are ">0" or "0".
-#' @param center.data Center data (recommended; this model doesn't include a mean vector!)
-#' @param scale.data  Scale data (also recommended)
 #' @param nsim Number of iterations past burn-in
 #' @param nburn Number of initial (burn-in) iterations to discard
 #' @param thin Keep every thin'th MCMC sample (i.e. save nsim/thin samples)
@@ -42,18 +47,25 @@ NULL
 #' @export
 
 bfa_gauss <- function(x, data=NULL, num.factor=1, restrict=NA, 
-                      center.data=TRUE, scale.data=TRUE, nsim=10000, nburn=1000, thin=1,
+                      nsim=10000, nburn=1000, thin=1,
                       print.status=500, keep.scores=FALSE,
                       loading.prior=c("gdp", "pointmass", "normal"), 
                       factor.scales = TRUE,
                       coda="loadings", ...) {
+  
+  args <- list(...)
+  if (!is.null(args$center.data) | !is.null(args$scale.data)) {
+    stop("The center.data and scale.data arguments are no longer supported. Please center or scale the data
+         before calling the bfa_* function.")
+  }
+  
   keep.loadings=TRUE
   loading.prior = match.arg(loading.prior)
   fr = model.frame(x, data=data, na.action=NULL)
   d = dim(fr)
   normal.dist = rep(1, d[2])
   m = .bfa(x, data=data, num.factor=num.factor, restrict=restrict, normal.dist=normal.dist, 
-           center.data=center.data, scale.data=scale.data, nsim=nsim, nburn=nburn, thin=thin,
+           center.data=NULL, scale.data=NULL, nsim=nsim, nburn=nburn, thin=thin,
            print.status=print.status, keep.scores=keep.scores, keep.loadings=keep.loadings,
            loading.prior=loading.prior, factor.scales=factor.scales, px=FALSE, coda=coda, 
            imh=FALSE, ...) 

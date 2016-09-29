@@ -174,7 +174,7 @@ void do_imh(Rcpp::NumericMatrix& Zr,
         arma::mat covmat(covmat_.begin(), le, le, false);
         arma::mat precmat(precmat_.begin(), le, le, false);
         
-        arma::vec propose = mu + arma::trans(covmat)*arma::randn(le)/sqrt(Rf_rchisq(df));
+        arma::vec propose = mu + arma::trans(covmat)*my_randn(le)/sqrt(Rf_rchisq(df));
         int maxprop = 10000;
         
         bool good = false;
@@ -183,7 +183,7 @@ void do_imh(Rcpp::NumericMatrix& Zr,
             good = true;
             break;
           } else {
-            propose = mu + arma::trans(covmat)*arma::randn(le)/sqrt(Rf_rchisq(df));
+            propose = mu + arma::trans(covmat)*my_randn(le)/sqrt(Rf_rchisq(df));
           }
         }
         

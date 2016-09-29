@@ -11,7 +11,7 @@ void sampleScores(arma::mat& Z, arma::mat& A, arma::mat& F, Rcpp::NumericVector&
     arma::vec s2i(sigma2inv.begin(), p, false);
     arma::mat Sigma_inv = arma::diagmat(s2i);
     
-    arma::mat U = arma::randn(k, n);
+    arma::mat U = my_randn(k, n);
     arma::mat fcov = arma::inv(arma::eye(k,k) + arma::trans(A)*Sigma_inv*A);
     arma::mat R = arma::chol(fcov);
     F = R*U + fcov*arma::trans(A)*Sigma_inv*Z;
@@ -19,7 +19,7 @@ void sampleScores(arma::mat& Z, arma::mat& A, arma::mat& F, Rcpp::NumericVector&
 
 
 void sampleScoresK(arma::mat& Z, arma::mat& A, arma::mat& F, arma::colvec& tauinv_score, int n, int k) {
-    arma::mat U = arma::randn(k, n);
+    arma::mat U = my_randn(k, n);
     arma::mat fcov = arma::inv(diagmat(tauinv_score) + arma::trans(A)*A);
     arma::mat R = arma::chol(fcov);
     F = R*U + fcov*arma::trans(A)*Z;

@@ -8,7 +8,7 @@
 #' @usage ratings08
 #' @format List of two data frames: \code{ratings} and \code{groups} (see above)
 #' @docType data
-#' @source Accessed through the Project VoteSmart API: \url{http://www.projectvotesmart.org}
+#' @source Accessed through the Project VoteSmart API: \url{http://www.votesmart.org}
 #' @author Jared Murray \email{jared.murray@@stat.duke.edu}
 # @references 
 # \url{url}

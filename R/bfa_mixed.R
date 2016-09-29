@@ -5,8 +5,11 @@ NULL
 #'
 #' This function performs a specified number of MCMC iterations and
 #' returns an object containing summary statistics from the MCMC samples
-#' as well as the actual samples if keep.scores or keep.loadings are \code{TRUE}.
-#' Default behavior is to save only the loadings. 
+#' as well as the actual samples of factor scores if keep.scores is \code{TRUE}.
+#' Default behavior is to save only samples of the loadings. 
+#' 
+#' Note: All the priors in use assume that the manifest Gaussian variables are on approximately the 
+#' same scale.
 #' 
 #' Additional parameters:
 #' \itemize{
@@ -15,6 +18,7 @@ NULL
 #' \item rho.a, rho.b: Beta hyperparameters for point mass prior
 #' \item sigma2.a, sigma2.b: Gamma hyperparameters for error precisions (for numeric variables)
 #' \item gdp.alpha, gdp.beta: GDP prior parameters
+#' \item mu.mean, mu.var: (Scalar) prior mean and variance for mu[j] (where E(y) = mu). Defaults are 0 and 1e4.
 #' }
 #' 
 #' @param x A formula or bfa object. 
@@ -27,8 +31,6 @@ NULL
 #' restrictions are ">0" or "0".
 #' @param normal.dist A character vector specifying which variables should be treated as observed 
 #' Gaussian. Defaults to all numeric variables if x is a formula.
-#' @param center.data Center data (for continuous variables - recommended!)
-#' @param scale.data  Scale data (for continuous variables)
 #' @param nsim Number of iterations past burn-in
 #' @param nburn Number of initial (burn-in) iterations to discard
 #' @param thin Keep every thin'th MCMC sample (i.e. save nsim/thin samples)
@@ -48,16 +50,23 @@ NULL
 #' @export
 
 bfa_mixed <- function(x, data=NULL, num.factor=1, restrict=NA, normal.dist=NA, 
-                      center.data=TRUE, scale.data=TRUE, nsim=10000, nburn=1000, thin=1,
+                      nsim=10000, nburn=1000, thin=1,
                       print.status=500, keep.scores=FALSE,
                       loading.prior=c("gdp", "pointmass", "normal"), 
                       factor.scales=FALSE, px=TRUE,
                       coda="loadings", coda.scale=TRUE, imh.iter=500,
                       imh.burn=500, ...) {
+  
+  args <- list(...)
+  if (!is.null(args$center.data) | !is.null(args$scale.data)) {
+    stop("The center.data and scale.data arguments are no longer supported. Please center or scale the data
+         before calling the bfa_* function.")
+  }
+  
   keep.loadings = TRUE
   loading.prior = match.arg(loading.prior)
   m = .bfa(x, data=data, num.factor=num.factor, restrict=restrict, normal.dist=normal.dist, 
-           center.data=center.data, scale.data=scale.data, nsim=nsim, nburn=nburn, thin=thin,
+           center.data=NULL, scale.data=NULL, nsim=nsim, nburn=nburn, thin=thin,
            print.status=print.status, keep.scores=keep.scores, keep.loadings=keep.loadings,
            loading.prior=loading.prior, factor.scales=factor.scales, px=px, coda=coda, 
            coda.scale=coda.scale, imh=TRUE, imh.iter=imh.iter, imh.burn=imh.burn, ...)

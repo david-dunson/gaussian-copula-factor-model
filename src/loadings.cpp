@@ -47,7 +47,7 @@ void sampleLoadings(arma::mat& Z, arma::mat& A, arma::mat& F,
       Ap_var = inv(FFt*sigma2inv(j) + (1/A_prior_var)*di);
     	Ap_means = Ap_var*F*trans(Z.row(j))*sigma2inv(j);
     	Rf = arma::chol(Ap_var);
-			U = arma::randn(k, 1);
+			U = my_randn(k, 1);
 			arma::vec draw = Rf*U + sqrt(r)*Ap_means;
 			
 			if (!po.is_empty()) { //Positive restrictions
@@ -55,7 +55,7 @@ void sampleLoadings(arma::mat& Z, arma::mat& A, arma::mat& F,
 			  int maxdraw=10000;
 			  R_CheckUserInterrupt();
 			  while(!test.is_empty() && maxdraw>0) {
-			    U = arma::randn(k, 1);
+			    U = my_randn(k, 1);
 			    draw = Rf*U + sqrt(r)*Ap_means;
 			    maxdraw--;
 			    test = find(draw.elem(po)<0);
@@ -80,7 +80,7 @@ void sampleLoadings(arma::mat& Z, arma::mat& A, arma::mat& F,
       Fsub = reshape(Ftmp.elem(find(Ftmp<math::inf())), k-lu, n);
       Ap_var_sm = inv(Fsub*trans(Fsub)*sigma2inv(j) + (1/A_prior_var)*disub);
 			Ap_mean_sm = Ap_var_sm * Fsub*trans(Z.row(j))*sigma2inv(j);
-			U = randn(k-lu, 1);
+			U = my_randn(k-lu, 1);
 			R = chol(Ap_var_sm);
 			vec draw =  R*U + sqrt(r)*Ap_mean_sm;	
 			rowvec tmprow = zeros(1,k);
@@ -93,7 +93,7 @@ void sampleLoadings(arma::mat& Z, arma::mat& A, arma::mat& F,
 			  int maxdraw=10000;
 			  R_CheckUserInterrupt();
 			  while(!test.is_empty() && maxdraw>0) {
-			    U = randn(k-lu, 1);
+			    U = my_randn(k-lu, 1);
 			    draw =  R*U + sqrt(r)*Ap_mean_sm;	
 			    for (int s=0; s<nlu; s++) {
             tmprow(nuu(s)) = draw(s);
